@@ -1,40 +1,16 @@
-import * as createError from 'http-errors'
-import * as express from 'express'
-import * as path from 'path'
-import * as cookieParser from 'cookie-parser'
-import * as logger from 'morgan'
+import 'reflect-metadata'
+import {createConnection} from 'typeorm'
+import  app from './app-express'
 
-import {router as apiRouter} from './routes/apiv1'
-import {router as singlePageApp} from './routes/singlePageApp'
+async function initializeApp() {
+    app.connection = await createConnection()
 
-const app = express()
+    app.closeConnection = function() {
+        this.connection.close()
+        this.connection = null
+    }
 
-app.use(logger('dev'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+    return app
+}
 
-app.use('/apiv1', apiRouter)
-app.use('/', singlePageApp)
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    next(createError(404))
-})
-
-// error handler
-app.use(function(err, req, res, next) {
-    console.log('-------- Error 500 --------')
-    console.log(err)
-
-    // set locals, only providing error in development
-    res.locals.message = err.message
-    res.locals.error = req.app.get('env') === 'development' ? err : {}
-
-    // render the error page
-    res.status(err.status || 500)
-    res.render('error')
-})
-
-export default app
+export default initializeApp
