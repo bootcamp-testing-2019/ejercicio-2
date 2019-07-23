@@ -28,7 +28,7 @@ npm install
 Crear la base de datos `bootcamp` con
 
 ```
-sudo mysql -hlocalhost -uroot -proot < ../bootcamp.sql
+sudo mysql -hlocalhost -uroot -p < ../bootcamp.sql
 ```
 
 y crear las tablas con las migraciones 
